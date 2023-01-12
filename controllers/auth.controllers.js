@@ -58,23 +58,35 @@ exports.login = async (req, res) => {
             }
         };
         //Create a token with payload, assign secret key from .env
-        jwt.sign(
-            payload,
-            process.env.SECRET_KEY,
-            {
-                expiresIn: 3600
-            },
-            (err, token) => {
-                if(err) throw err;
-                res.status(200).json({
-                    token: token
-                })
-            }
-        );
+        const token = jwt.sign(payload, process.env.SECRET_KEY, {
+            expiresIn: 86400,
+        })
+
+        req.session.token = token;
+
+        res.status(200).json({
+            id: user._id,
+            username: user.username,
+            email: user.email,
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
             msg: 'Server Error'
         })
+    }
+}
+//Sign out
+exports.signout = async (req, res) => {
+    try {
+        console.log(req.session);
+        //Destroy session
+        req.session = null;
+        console.log(req.session);
+        return res.status(200).json({
+            message: 'You have been signed out!'
+        });
+    } catch (error) {
+        this.next(err);
     }
 }
