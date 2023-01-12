@@ -2,6 +2,7 @@ const { config } = require('dotenv');
 const express = require('express');
 const app = express();
 const routes = require('./routes/index.routes');
+const cookieSession = require('cookie-session');
 const connectMongoServer = require('./config/db.config');
 
 //Get enviroment variables from .env
@@ -10,6 +11,13 @@ config();
 connectMongoServer();
 //Allow json data request
 app.use(express.json());
+//Cookie session
+app.use(cookieSession({
+    name: 'Tommy-session',
+    secret: process.env.COOKIE_SECRET,
+    httpOnly: true,
+    secure: true,
+}))
 // Assign all available routes to api routes
 app.use('/api', routes)
 // Listen port
